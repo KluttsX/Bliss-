@@ -19,6 +19,54 @@ const auth = getAuth(app);
 
 const db = getFirestore(app);
 const blogsRef = collection(db, "blogs");
+const helpsRef = collection(db, "help_section");
+
+getDocs(helpsRef)
+    .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const title = data.title;
+            const info = data.intruct;
+            var textoFormateado = info.replace(/\/st\//g, "<br>");
+
+            const helpHTML = `
+        <div class="faq">
+          <button class="accordion">
+            ${title}
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="pannel">
+            <p>
+              ${textoFormateado}
+            </p>
+          </div>
+        </div>
+      `;
+
+            document.getElementById("FAQ").innerHTML += helpHTML;
+        });
+    })
+    .catch((error) => {
+        console.log("Error al cargar las sección de ayuda: ", error);
+    });
+
+// Agregamos el evento de clic al elemento padre
+document.addEventListener("click", function (event) {
+    // Verificamos si el clic ocurrió en un botón con la clase "accordion"
+    if (event.target.classList.contains("accordion")) {
+        // Cambiamos las clases y mostramos u ocultamos el panel correspondiente
+        event.target.classList.toggle("active");
+        event.target.parentElement.classList.toggle("active");
+
+        var pannel = event.target.nextElementSibling;
+
+        if (pannel.style.display === "block") {
+            pannel.style.display = "none";
+        } else {
+            pannel.style.display = "block";
+        }
+    }
+});
 
 getDocs(blogsRef).then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
@@ -108,36 +156,3 @@ submitLogin.addEventListener("click", function (event) {
         });
 
 })
-
-const urlParams = new URLSearchParams(window.location.search);
-const blogId = urlParams.get('id');
-
-const blogDocRef = doc(db, "blogs", blogId);
-
-getDoc(blogDocRef)
-    .then((doc) => {
-        if (doc.exists()) {
-            const data = doc.data();
-            const images = data.image;
-            const titulo = data.title;
-            const info = data.info;
-
-            const blogdetailsHtml = ` 
-            <div class="post">
-                <img id="imagen" src="${images}">
-                <h3 id="titulo">${titulo}</h3>
-                <p id="info">${info}</p>
-            </div>
-            `;
-
-            document.getElementById("blogsdetas").innerHTML = blogdetailsHtml;
-        } else {
-            console.log("El documento del blog no existe");
-        }
-    })
-    .catch((error) => {
-        console.log("Error obteniendo detalles del blog: ", error);
-    });
-
-
-
