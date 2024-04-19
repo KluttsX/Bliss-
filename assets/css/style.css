@@ -96,7 +96,8 @@ header.scrolled {
     align-items: center;
     text-align: center;
     font-size: 17px;
-    margin-left: 15px;
+    font-weight: bold;
+    margin-left: 20px;
 }
 
 .userIcon:hover {
@@ -804,11 +805,23 @@ h1 {
 }
 
 .btn-app {
-    display: inline-block;
     font-size: 14px;
+    font-weight: 400;
     border-radius: 8px;
     margin-top: 30px;
     transition: all ease .55s;
+    width: 185px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 68px;
+    background-color: var(--main-color);
+    color: white;
+}
+
+.btn-app i {
+    margin-right: 10px;
+    font-size: 20px;
 }
 
 .btn-app:hover {
@@ -1038,6 +1051,7 @@ input:focus {
         font-size: 25px;
     }
 }
+
 .wrapper2 {
     height: 100%;
     max-width: 75%;
