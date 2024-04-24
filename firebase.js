@@ -20,6 +20,44 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const blogsRef = collection(db, "blogs");
 const helpsRef = collection(db, "help_section");
+const urlParams = new URLSearchParams(window.location.search);
+const blogId = urlParams.get('id');
+
+getDocs(blogsRef).then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        if (doc.id === blogId) {
+            const data = doc.data();
+            const images = data.image;
+            const titulo = data.title;
+            const info = data.info.replace(/\./g, '.<br><br>');
+            
+            const authorName = data.author;
+            const fecha = data.date;
+
+            
+
+            const fechaJS = fecha.toDate();
+
+            const fechaFormateada = fechaJS.toLocaleDateString();
+
+            const blogHTML = `
+            <title>${titulo}</title>
+            <img
+                src="${images}">
+            <div class="text-post">
+                <h1>${titulo}</h1>
+                <p>
+                   ${info}
+                </p>
+            </div>
+            `;
+
+            document.getElementById("detalles").innerHTML = blogHTML;
+        }
+    });
+}).catch((error) => {
+    console.log("Error obteniendo blogs: ", error);
+});
 
 getDocs(helpsRef)
     .then((querySnapshot) => {
@@ -66,6 +104,56 @@ document.addEventListener("click", function (event) {
             pannel.style.display = "block";
         }
     }
+});
+
+
+
+getDocs(blogsRef).then((querySnapshot) => {
+    let count = 0; // Contador para seguir la cantidad de elementos cargados
+    querySnapshot.forEach((doc) => {
+        if (count < 4) { // Verifica si se han cargado menos de 4 elementos
+            const data = doc.data();
+            const images = data.image;
+            const titulo = data.title;
+            const info = data.info;
+            const authorName = data.author;
+            const fecha = data.date;
+
+            const fechaJS = fecha.toDate();
+            const fechaFormateada = fechaJS.toLocaleDateString();
+
+            const blogHTML = `
+                <div class="blog-box">
+                    <div class="blog-box-img">
+                        <img src="${images}">
+                        <a href="post.html?id=${doc.id}" class="blog-img-link">
+                            <i class="bx bx-right-top-arrow-circle"></i>
+                        </a>
+                    </div>
+                    <div class="blog-box-text">
+                        <a>${titulo}</a>
+                        <p>${info}</p>
+                        <div class="blog-author">
+                            <div class="blog-author-img">
+                                <i class="bx bx-user"></i>
+                            </div>
+                            <div class="blog-author-text">
+                                <strong>${authorName}</strong>
+                                <span>${fechaFormateada}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("blog-section").innerHTML += blogHTML;
+            count++; // Incrementa el contador después de cargar un elemento
+        } else {
+            return; // Detiene la iteración si ya se han cargado 4 elementos
+        }
+    });
+}).catch((error) => {
+    console.log("Error obteniendo blogs: ", error);
 });
 
 getDocs(blogsRef).then((querySnapshot) => {
@@ -156,3 +244,4 @@ submitLogin.addEventListener("click", function (event) {
         });
 
 })
+
